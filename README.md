@@ -3,7 +3,7 @@
 ![Lixie](pictures/lixie.jpg)
 
 Eine Uhr mit lasergeschnittenen Komponenten (außer LED, Kabel, Schrauben und Controller) basierend auf einem [ESP8266 NodeMCU](https://www.aliexpress.com/item/1PCS-ESP8266-NodeMCU-V3-Lua-WIFI-module-memory-32M-Flash-USB-serial-CH340G/32820380705.html) mit adressierbaren RGB-LED-Stripes
-Die 3D-Modelle für das Gehäuse sind auf thingiverse.com [Uhren-Teile](http://www.thingiverse.com/thing:2137765) und [ESP8266-Gehäuse](https://www.thingiverse.com/thing:3392585) verfügbar.
+Die 3D-Modelle für das Gehäuse sind auf thingiverse.com [Uhren-Teile](http://www.thingiverse.com/thing:3392585) und [ESP8266-Gehäuse](https://www.thingiverse.com/thing:3392585) verfügbar.
 
 Die Software ist noch in Entwicklung und soll z.B. noch um die Datumsanzeige erweitert werden.
 
