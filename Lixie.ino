@@ -37,7 +37,7 @@ extern "C"
 #include <WiFiManager.h>          // https://github.com/tzapu/WiFiManager
 #include <NTPClient.h>			  // https://github.com/arduino-libraries/NTPClient
 #include <Timezone.h>    		  // https://github.com/JChristensen/Timezone
-
+#include <Ticker.h>
 #include <errno.h>
 
 // begin of individual settings
@@ -189,6 +189,8 @@ static const float corr_colon[NUM_COLON_LEDS] = {
 		0.70, 0.70
 };
 #endif
+
+Ticker sweeper;
 
 void update_timeleds(void);
 
@@ -780,19 +782,20 @@ void setup()
 
 void update_timeleds(void)
 {
-	static int lsec = 61, lhr = -1;
+	static int lsec = 61, min, lmin = -1;
 	int sec, sec1, sec10, min1, min10, hr1, hr10, hr24, ledpos;
 	time_t rawtime, loctime;
 
 	rawtime = timeClient.getEpochTime() + 1;	// get NTP-time
 	loctime = myTZ.toLocal(rawtime);			// calc local time
 	sec = second(loctime);						// get second
+	min = minute(loctime);
 	hr24 = hour(loctime);
 
-	if ((hr24 != lhr) && timeClient.update())						// NTP-update
+	if ((min != lmin) && timeClient.update())						// NTP-update
 	{
 		umicros = amicros;++
-		lhr = hr24;
+		lmin = min;
 	}
 	if(synced)
 	{
@@ -802,8 +805,8 @@ void update_timeleds(void)
 		{
 			sec1 = sec % 10;
 			sec10 = sec / 10;
-			min1 = minute(loctime) % 10;
-			min10 = minute(loctime) / 10;
+			min1 = min % 10;
+			min10 = min / 10;
 			hr1 = hr24 % 10;
 			hr10 = hr24 / 10;
 			ledpos = 0;
@@ -830,19 +833,20 @@ void update_timeleds(void)
 	else
 		delay(10);
 
-	sweep();										// update LEDs
+//	sweep();										// update LEDs
 }
 
 void loop()
 {
+	sweeper.attach(0.020, sweep);
 	for (;;)
 	{
 		amicros = micros();
 		update_timeleds();
-		server.handleClient();							// handle HTTP-requests
+		server.handleClient();						// handle HTTP-requests
 		if (((amicros - umicros) / 1000000L) > 36000)							// if no sync for more than ten hours
 		{
-			digitalWrite(BUILTIN_LED, HIGH);							// switch off BUILTIN_LED
+			digitalWrite(BUILTIN_LED, HIGH);		// switch off BUILTIN_LED
 			synced = 0;
 		}
 		else
