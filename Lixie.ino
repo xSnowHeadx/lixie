@@ -832,8 +832,6 @@ void update_timeleds(void)
 	}
 	else
 		delay(10);
-
-//	sweep();										// update LEDs
 }
 
 void loop()

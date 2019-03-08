@@ -36,7 +36,7 @@ Das Projekt besteht nur aus einer einzigen "ino"-Datei, welche nach Einbindung d
 * SPI
 * EEPROM
 ##### Spezial-Bibliotheken
-* from [ESP8266-core](https://github.com/esp8266/Arduino)
+* aus [ESP8266-core](https://github.com/esp8266/Arduino)
 	* ESP8266
 	* ESP8266WebServer
 	* ESP8266WiFi
@@ -46,7 +46,7 @@ Das Projekt besteht nur aus einer einzigen "ino"-Datei, welche nach Einbindung d
 * [Timezone](https://github.com/JChristensen/Timezone)
 * [FastLED](https://github.com/FastLED/FastLED)
 * [NeoPixel](https://github.com/adafruit/Adafruit_NeoPixel)
-* [Ticker](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&cad=rja&uact=8&ved=2ahUKEwi73JP4pvPgAhUSgHMKHVbECAkQFjAAegQIABAB&url=https%3A%2F%2Fgithub.com%2Fesp8266%2FArduino%2Ftree%2Fmaster%2Flibraries%2FTicker&usg=AOvVaw3BcGBh5ZSOAUPeoI-4Qs98)
+* [Ticker](https://github.com/esp8266/Arduino/tree/master/libraries/Ticker)
 
 Um die korrekte Ortszeit aus den NTP-Daten berechnen zu können, müssen die sogenannten "DST-rules" in den Zeilen 79 und 81 im Quellfile entsprechend der Bibliotheksbeschreibung [Timezone](https://github.com/JChristensen/Timezone) angepaßt werden. 
 
