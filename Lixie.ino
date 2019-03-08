@@ -838,7 +838,7 @@ void update_timeleds(void)
 
 void loop()
 {
-	sweeper.attach(0.020, sweep);
+	sweeper.attach(0.010, sweep);
 	for (;;)
 	{
 		amicros = micros();
