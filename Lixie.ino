@@ -38,11 +38,16 @@ extern "C"
 #include <NTPClient.h>			  // https://github.com/arduino-libraries/NTPClient
 #include <Timezone.h>    		  // https://github.com/JChristensen/Timezone
 #include <Ticker.h>
+#include <OneButton.h>
 #include <errno.h>
 
 // begin of individual settings
 
 #define HAS_COLONS		   1 	// set to 0 if no colon digits used
+
+#define DATE_TIME		   4    // show date for 4 seconds
+
+#define DATE_BUTTON		   0	// button on GPIO0 to show date
 
 #if HAS_COLONS
 #define NUM_LEDS 		 124
@@ -59,7 +64,7 @@ extern "C"
 #endif
 
 enum {
-	CMOD_NOTHING,
+	CMOD_NONE,
 	CMOD_STEADY,
 	CMOD_BLINK,
 	CMOD_ALTERNATE,
@@ -67,6 +72,14 @@ enum {
 	CMOD_DATE,
 	CMOD_NUM_MODES,
 };
+
+enum {
+	DMOD_NONE,
+	DMOD_MINUTE,
+	DMOD_HOUR,
+	DMOD_NOW
+};
+
 #define DATA_PIN 	 14			  // output-pin for LED-data (current D5)
 
 #if _FASTLED_
@@ -102,7 +115,12 @@ typedef struct {
 
 CRGB actcolor;
 
-unsigned char synced = 0, datemode = 0;
+OneButton d_mode(DATE_BUTTON, true);			// create date button object
+
+Ticker sweeper;
+
+unsigned char synced = 0;
+unsigned int datemode = 0;
 
 // display layout and led order
 
@@ -190,8 +208,6 @@ static const float corr_colon[NUM_COLON_LEDS] = {
 };
 #endif
 
-Ticker sweeper;
-
 void update_timeleds(void);
 
 enum {COLORMODE_FIX, COLORMODE_RBFULL, COLORMODE_RBFIX, COLORMODE_RBSHIFT};
@@ -205,6 +221,7 @@ typedef struct
 	unsigned char cmode;
 	unsigned char r, g, b;
 	unsigned char brightness;
+	unsigned char dmode;
 	unsigned char valid;
 } lixie_processor_struct;
 lixie_processor_struct lixie_processor;
@@ -233,6 +250,12 @@ char tstr1[128], tstr2[128] = "";
 
 // the web-server-object
 ESP8266WebServer server(80);   //instantiate server at port 80 (http port)
+
+// click function of date button
+void do_dmode(void)
+{
+	datemode = DATE_TIME * 100;
+}
 
 // own fmod() because of issue in the libm.a ( see https://github.com/esp8266/Arduino/issues/612 )
 float xfmod(float numer, float denom)
@@ -454,6 +477,8 @@ void sweep(void) {
 	int i, digitpos = 0, corrpos;
 	float corrfact;
 
+	if(datemode)
+		--datemode;
 	for(i = 0; i < NUM_LEDS; i++)
 	{
 		if(leds_last[i] < leds_curr[i])
@@ -536,7 +561,7 @@ void page_out(void)
 #if HAS_COLONS
 		server.sendContent(
 			"<tr><td width=\"120\"><b><big>Colons mode</big></b></td><td width=\"50\"></td><td><select name=\"CMODE\"><option value=\"0\"");
-		if (lixiep->cmode == CMOD_NOTHING)
+		if (lixiep->cmode == CMOD_NONE)
 			server.sendContent(" selected");
 		server.sendContent(">no colons</option><option value=\"1\"");
 		if (lixiep->cmode == CMOD_STEADY)
@@ -552,6 +577,18 @@ void page_out(void)
 			server.sendContent(" selected");
 		server.sendContent(">AM/PM</option></select></td></tr>");
 #endif
+		server.sendContent(
+			"<tr><td width=\"120\"><b><big>Date mode</big></b></td><td width=\"50\"></td><td><select name=\"DMODE\"><option value=\"0\"");
+		if (lixiep->dmode == DMOD_NONE)
+			server.sendContent(" selected");
+		server.sendContent(">inactive</option><option value=\"1\"");
+		if (lixiep->dmode == DMOD_MINUTE)
+			server.sendContent(" selected");
+		server.sendContent(">every minute</option><option value=\"2\"");
+		if (lixiep->dmode == DMOD_HOUR)
+			server.sendContent(" selected");
+		server.sendContent(">every hour</option><option value=\"3\"");
+		server.sendContent(">now</option></select></td></tr>");
 		server.sendContent(
 				"<tr><td><b><big>Brightness</big></b></td><td></td><td><input maxlength=\"3\" size=\"3\" name=\"BRIGHT\" value=\"");
 		server.sendContent(String(lixiep->brightness));
@@ -643,6 +680,8 @@ void setup()
 	// get time from internet
 	timeClient.update();
 
+	d_mode.attachClick(do_dmode);
+
 	// parsing function for the commands of the web-server
 	server.on("/", []()
 	{
@@ -704,7 +743,20 @@ void setup()
 							lixiep->cmode = 4;
 					}
 					else
-						sprintf(outstr + strlen(outstr), "MODE=%d\r\n", lixiep->mode);
+						sprintf(outstr + strlen(outstr), "CMODE=%d\r\n", lixiep->mode);
+				}
+				else if(server.argName(i) == "DMODE")
+				{
+					pval = strtol(server.arg(i).c_str(), NULL, 10);
+					if(server.arg(i).length() && !errno)
+					{
+						if(pval >= DMOD_NOW)
+							datemode = DATE_TIME * 100;
+						else
+							lixiep->dmode = pval;
+					}
+					else
+						sprintf(outstr + strlen(outstr), "DMODE=%d\r\n", lixiep->dmode);
 				}
 				else if(server.argName(i) == "BRIGHT")
 				{
@@ -778,6 +830,7 @@ void setup()
 	// start web-server
 	server.begin();
 	Serial.println("Web server started!");
+	sweeper.attach(0.010, sweep);
 }
 
 void update_timeleds(void)
@@ -803,12 +856,33 @@ void update_timeleds(void)
 			hr24 -= 12;
 		if (sec != lsec)
 		{
+			if(lixiep->dmode)
+			{
+				if(!sec)
+				{
+					if((lixiep->dmode == DMOD_MINUTE) || !min)
+					{
+						datemode = DATE_TIME * 100;
+					}
+				}
+			}
+
+			lsec = sec;
+
+			if(datemode)
+			{
+				sec = year(loctime) - 2000;
+				min = month(loctime);
+				hr24 = day(loctime);
+			}
+
 			sec1 = sec % 10;
 			sec10 = sec / 10;
 			min1 = min % 10;
 			min10 = min / 10;
 			hr1 = hr24 % 10;
 			hr10 = hr24 / 10;
+
 			ledpos = 0;
 
 			num2led(&ledpos,  hr10);
@@ -825,7 +899,6 @@ void update_timeleds(void)
 			num2led(&ledpos,  sec1);
 
 			digitalWrite(BUILTIN_LED, HIGH);		// blink for sync
-			lsec = sec;
 		}
 		delay(10);
 		digitalWrite(BUILTIN_LED, LOW);
@@ -836,19 +909,17 @@ void update_timeleds(void)
 
 void loop()
 {
-	sweeper.attach(0.010, sweep);
-	for (;;)
+	// do the button functions
+	d_mode.tick();
+	amicros = micros();
+	update_timeleds();
+	server.handleClient();						// handle HTTP-requests
+	if (((amicros - umicros) / 1000000L) > 36000)							// if no sync for more than ten hours
 	{
-		amicros = micros();
-		update_timeleds();
-		server.handleClient();						// handle HTTP-requests
-		if (((amicros - umicros) / 1000000L) > 36000)							// if no sync for more than ten hours
-		{
-			digitalWrite(BUILTIN_LED, HIGH);		// switch off BUILTIN_LED
-			synced = 0;
-		}
-		else
-			synced = 1;
+		digitalWrite(BUILTIN_LED, HIGH);		// switch off BUILTIN_LED
+		synced = 0;
 	}
+	else
+		synced = 1;
 }
 

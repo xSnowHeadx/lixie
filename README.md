@@ -5,7 +5,7 @@
 Eine Uhr mit lasergeschnittenen Komponenten (außer LED, Kabel, Schrauben und Controller) basierend auf einem [ESP8266 NodeMCU](https://www.aliexpress.com/item/1PCS-ESP8266-NodeMCU-V3-Lua-WIFI-module-memory-32M-Flash-USB-serial-CH340G/32820380705.html) mit adressierbaren RGB-LED-Stripes
 Die 3D-Modelle für das Gehäuse sind auf thingiverse.com [Uhren-Teile](http://www.thingiverse.com/thing:3392585) und [ESP8266-Gehäuse](https://www.thingiverse.com/thing:3392585) verfügbar.
 
-Die Software ist noch in Entwicklung und soll z.B. noch um die Datumsanzeige und Zeitzoneneingabe erweitert werden.
+Die Software ist noch in Entwicklung und soll z.B. noch um die Zeitzoneneingabe erweitert werden.
 
 ## Hardware Setup
 
@@ -47,6 +47,7 @@ Das Projekt besteht nur aus einer einzigen "ino"-Datei, welche nach Einbindung d
 * [FastLED](https://github.com/FastLED/FastLED)
 * [NeoPixel](https://github.com/adafruit/Adafruit_NeoPixel)
 * [Ticker](https://github.com/esp8266/Arduino/tree/master/libraries/Ticker)
+* [OneButton](https://github.com/mathertel/OneButton)
 
 Um die korrekte Ortszeit aus den NTP-Daten berechnen zu können, müssen die sogenannten "DST-rules" in den Zeilen 79 und 81 im Quellfile entsprechend der Bibliotheksbeschreibung [Timezone](https://github.com/JChristensen/Timezone) angepaßt werden. 
 
@@ -82,6 +83,16 @@ Mit "n" wird das Verhalten der Doppelpunkte eingestellt. "n" kann dabei Werte vo
 - 2: die Doppelpunkte blinken im Sekundenrythmus
 - 3: im Sekundenrythmus wechseln sich oberer und unterer Punkt der Doppelpunkte ab
 - 4: vormittags blinken die unteren, nachmittags die oberen Punkte im Sekundenrythmus
+
+*Anzeigeart des Datums einstellen:*  
+`http://clockip?DMODE=n`
+
+Mit "n" wird das Verhalten der Doppelpunkte eingestellt. "n" kann dabei Werte von 0 bis 4 annehmen:
+	
+- 0: kein Datum anzeigen
+- 1: am Anfang jeder Minute das Datum für 4 Sekunden anzeigen 
+- 2: am Anfang jeder Stunde das Datum für 4 Sekunden anzeigen
+- 3: das Datum jetzt für 4 Sekunden anzeigen (ändert den aktuellen Modus nicht)
 
 *Gesamthelligkeit setzen (0...100%):*  
 `http://clockip?BRIGHT=nnn`
