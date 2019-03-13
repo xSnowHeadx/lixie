@@ -26,6 +26,8 @@ Die Verbindung vom ESP8266 zum LED-Stripe kann wie [hier](https://github.com/lvi
 
 Die Spannungsversorgung kann über den USB-Port erfolgen.  
 
+Die Taste für die kurzzeitige Anzeige des Datums liegt aktuell auf GPIO0. Damit kann die Flash-Taste des ESP8266 für diesen Zweck benutzt werden. Durch Neudefinition von "DATE_BUTTON" kann auch jeder beliebige andere Port verwendet werden. 
+
 # Software
 
 Das Projekt besteht nur aus einer einzigen "ino"-Datei, welche nach Einbindung der erforderlichen Bibliotheken mit jeder Arduino-tauglichen Entwicklungsumgebung gebaut und geflasht werden kann.
@@ -87,12 +89,12 @@ Mit "n" wird das Verhalten der Doppelpunkte eingestellt. "n" kann dabei Werte vo
 *Anzeigeart des Datums einstellen:*  
 `http://clockip?DMODE=n`
 
-Mit "n" wird das Verhalten der Doppelpunkte eingestellt. "n" kann dabei Werte von 0 bis 4 annehmen:
+Mit "n" wird das Verhalten der Datumsanzeige eingestellt. "n" kann dabei Werte von 0 bis 4 annehmen:
 	
 - 0: kein Datum anzeigen
 - 1: am Anfang jeder Minute das Datum für 4 Sekunden anzeigen 
 - 2: am Anfang jeder Stunde das Datum für 4 Sekunden anzeigen
-- 3: das Datum jetzt für 4 Sekunden anzeigen (ändert den aktuellen Modus nicht)
+- 3: das Datum jetzt für 4 Sekunden anzeigen (ändert den aktuellen Modus nicht dauerhaft)
 
 *Gesamthelligkeit setzen (0...100%):*  
 `http://clockip?BRIGHT=nnn`
