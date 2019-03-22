@@ -16,7 +16,7 @@ Für den Aufbau der Word-Clock werden folgende Komponenten benötigt:
 - optional [ESP8266-Gehäuse](https://www.thingiverse.com/thing:2842012)
 - 1 USB-Netzteil
 - diverse Kabel, Lötwerkzeug
-- die [lasergeschnittenen Teile](http://www.thingiverse.com/thing:2137765)
+- die [lasergeschnittenen Teile](http://www.thingiverse.com/thing:3392585)
 
 # Hardwareaufbau:
 
