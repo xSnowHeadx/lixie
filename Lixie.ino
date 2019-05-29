@@ -115,6 +115,7 @@ Ticker sweeper;
 
 unsigned char synced = 0;
 unsigned int datemode = 0;
+unsigned int brightness = 100;
 
 // display layout and led order
 
@@ -123,15 +124,15 @@ unsigned int datemode = 0;
 /*
 
  Number			LED position
- 4       4    	   009---->|     019
+ 	 4       4    	   009---->|     019
  5 	 	5 	 	000     |     010     |
- 6	 	6	 |	   008	   |	 018
+ 	 6	 	6	 |	   008	   |	 018
  3	 	3	 	001	    |	  011	  |
- 8	 	8	 |	   007	   |	 017
+ 	 8	 	8	 |	   007	   |	 017
  7	 	7	 	002     |	  012	  |
- 2	 	2	 |	   006	   |	 016
+ 	 2	 	2	 |	   006	   |	 016
  9	 	9	 	003     |	  013	  |
- 0	 	0	 |	   005	   |	 015
+ 	 0	 	0	 |	   005	   |	 015
  1	 	1	 	004---->|     014---->|
  */
 
@@ -154,23 +155,29 @@ static const unsigned long ledmap[10] =
 // number order from front to back: 1 2 3 4 5 6 7 8 9 0
 /*
  Number			LED position
- 0       0    	   009---->|     019
+ 	 0       0    	   009---->|     019
  9 	 	9 	 	000     |     010     |
- 8	 	8	 |	   008	   |	 018
+ 	 8	 	8	 |	   008	   |	 018
  7	 	7	 	001	    |	  011	  |
- 6	 	6	 |	   007	   |	 017
+ 	 6	 	6	 |	   007	   |	 017
  5	 	5	 	002     |	  012	  |
- 4	 	4	 |	   006	   |	 016
+ 	 4	 	4	 |	   006	   |	 016
  3	 	3	 	003     |	  013	  |
- 2	 	2	 |	   005	   |	 015
+ 	 2	 	2	 |	   005	   |	 015
  1	 	1	 	004---->|     014---->|
  */
 static const unsigned long ledmap[10] =
 {
-
-0b10000000001000000000, 0b00000100000000010000, 0b00001000000000100000, 0b00000010000000001000, 0b00010000000001000000,
-		0b00000001000000000100, 0b00100000000010000000, 0b00000000100000000010, 0b01000000000100000000,
-		0b00000000010000000001, };
+	0b10000000001000000000,
+	0b00000100000000010000,
+	0b00001000000000100000,
+	0b00000010000000001000,
+	0b00010000000001000000,
+	0b00000001000000000100,
+	0b00100000000010000000,
+	0b00000000100000000010,
+	0b01000000000100000000,
+	0b00000000010000000001, };
 #endif
 
 static const float corr_digit[NUM_DIGIT_LEDS / 2] =
@@ -182,7 +189,7 @@ static const float corr_digit[NUM_DIGIT_LEDS / 2] =
 
 #if HAS_COLONS
 static const unsigned char colonmap[CMOD_NUM_MODES] =
-{ 0b00000000,	// CMOD_NOTHING
+{ 		0b00000000,	// CMOD_NOTHING
 		0b00110011, // CMOD_STEADY
 		0b00000011, // CMOD_BLINK
 		0b00100001, // CMOD_ALTERNATE
@@ -213,6 +220,9 @@ typedef struct
 	unsigned char r, g, b;
 	unsigned char brightness;
 	unsigned char dmode;
+	unsigned char nm_start;
+	unsigned char nm_end;
+	unsigned char nm_brightness;
 	unsigned char valid;
 } lixie_processor_struct;
 lixie_processor_struct lixie_processor;
@@ -363,8 +373,8 @@ void update_rainbow(unsigned char dpos)
 	case COLORMODE_FIX:
 	{
 		// generate color-structure for wished display-color
-		actcolor = CRGB(((int) lixiep->r * (int) lixiep->brightness) / 40,
-				((int) lixiep->g * (int) lixiep->brightness) / 40, ((int) lixiep->b * (int) lixiep->brightness) / 40);
+		actcolor = CRGB(((int) lixiep->r * brightness) / 40,
+				((int) lixiep->g * brightness) / 40, ((int) lixiep->b * brightness) / 40);
 	}
 		break;
 
@@ -376,8 +386,8 @@ void update_rainbow(unsigned char dpos)
 		hsl_to_rgb((int) (255.0 * rainbow_offset), 255, 128, &r, &g, &b);
 
 		// generate color-structure for wished display-color
-		actcolor = CRGB((r * (int) lixiep->brightness) / 100, (g * (int) lixiep->brightness) / 100,
-				(b * (int) lixiep->brightness) / 100);
+		actcolor = CRGB((r * brightness) / 100, (g * brightness) / 100,
+				(b * brightness) / 100);
 	}
 		break;
 
@@ -389,8 +399,8 @@ void update_rainbow(unsigned char dpos)
 		hsl_to_rgb((int) (255.0 * xfmod((dpos * rainbow_posstep), 1.0)), 255, 128, &r, &g, &b);
 
 		// generate color-structure for wished display-color
-		actcolor = CRGB((r * (int) lixiep->brightness) / 100, (g * (int) lixiep->brightness) / 100,
-				(b * (int) lixiep->brightness) / 100);
+		actcolor = CRGB((r * brightness) / 100, (g * brightness) / 100,
+				(b * brightness) / 100);
 	}
 		break;
 
@@ -402,8 +412,8 @@ void update_rainbow(unsigned char dpos)
 		hsl_to_rgb((int) (255.0 * xfmod(dpos * rainbow_posstep + rainbow_offset, 1.0)), 255, 128, &r, &g, &b);
 
 		// generate color-structure for wished display-color
-		actcolor = CRGB((r * (int) lixiep->brightness) / 100, (g * (int) lixiep->brightness) / 100,
-				(b * (int) lixiep->brightness) / 100);
+		actcolor = CRGB((r * brightness) / 100, (g * brightness) / 100,
+				(b * brightness) / 100);
 	}
 		break;
 	}
@@ -581,7 +591,16 @@ void page_out(void)
 				"<tr><td><b><big>Brightness</big></b></td><td></td><td><input maxlength=\"3\" size=\"3\" name=\"BRIGHT\" value=\"");
 		server.sendContent(String(lixiep->brightness));
 		server.sendContent(
-				"\"> %</td></tr><tr><td><b><big>Fading</font></big></b></td><td></td><td><input maxlength=\"3\" size=\"3\" name=\"FADE\" value=\"");
+				"\"> %</td></tr><tr><td><b><big>Nightmode</font></big></b><td></td></td><td>Brightness<br><input maxlength=\"3\" size=\"3\" name=\"NMBRIGHT\" value=\"");
+		server.sendContent(String(lixiep->nm_brightness));
+		server.sendContent(
+				"\"> %</td><td>Start<br><input maxlength=\"3\" size=\"3\" name=\"NMSTART\" value=\"");
+		server.sendContent((lixiep->nm_start > 9)?"":"0" + String(lixiep->nm_start));
+		server.sendContent(
+				"\"> h</td><td>End<br><input maxlength=\"3\" size=\"3\" name=\"NMEND\" value=\"");
+		server.sendContent((lixiep->nm_end > 9)?"":"0" + String(lixiep->nm_end));
+		server.sendContent(
+				"\"> h</td></tr><tr><td> <br></td></tr><tr><td><b><big>Fading</font></big></b></td><td></td><td><input maxlength=\"3\" size=\"3\" name=\"FADE\" value=\"");
 		server.sendContent(String(lixiep->fade));
 		server.sendContent(
 				"\"> %</td></tr><tr><td><b><big><font color=\"#cc0000\">Red</font></big></b></td><td></td><td><input maxlength=\"3\" size=\"3\" name=\"RED\" value=\"");
@@ -634,11 +653,14 @@ void setup()
 		lixiep->h24 = 1;
 		lixiep->mode = COLORMODE_FIX;
 		lixiep->cmode = CMOD_BLINK;
-		lixiep->fade = 25;
+		lixiep->fade = 50;
 		lixiep->r = 100;
 		lixiep->g = 8;
 		lixiep->b = 0;
 		lixiep->brightness = 100;
+		lixiep->nm_start = 0;
+		lixiep->nm_end = 0;
+		lixiep->nm_brightness = 50;
 		lixiep->valid = 0xA5;
 
 		eptr = (unsigned char*) lixiep;
@@ -758,6 +780,42 @@ void setup()
 					else
 					sprintf(outstr + strlen(outstr), "BRIGHT=%d\r\n", lixiep->brightness);
 				}
+				else if(server.argName(i) == "NMSTART")
+				{
+					pval = strtol(server.arg(i).c_str(), NULL, 10);
+					if(server.arg(i).length() && !errno)
+					{
+						lixiep->nm_start = abs(pval);
+						if(lixiep->nm_start > 23)
+						lixiep->nm_start = 0;
+					}
+					else
+					sprintf(outstr + strlen(outstr), "NMSTART=%d\r\n", lixiep->nm_start);
+				}
+				else if(server.argName(i) == "NMEND")
+				{
+					pval = strtol(server.arg(i).c_str(), NULL, 10);
+					if(server.arg(i).length() && !errno)
+					{
+						lixiep->nm_end = abs(pval);
+						if(lixiep->nm_end > 23)
+						lixiep->nm_end = 0;
+					}
+					else
+					sprintf(outstr + strlen(outstr), "NMEND=%d\r\n", lixiep->nm_end);
+				}
+				else if(server.argName(i) == "NMBRIGHT")
+				{
+					pval = strtol(server.arg(i).c_str(), NULL, 10);
+					if(server.arg(i).length() && !errno)
+					{
+						lixiep->nm_brightness = pval;
+						if(lixiep->nm_brightness > 100)
+						lixiep->nm_brightness = 100;
+					}
+					else
+					sprintf(outstr + strlen(outstr), "NMBRIGHT=%d\r\n", lixiep->nm_brightness);
+				}
 				else if(server.argName(i) == "FADE")
 				{
 					pval = strtol(server.arg(i).c_str(), NULL, 10);
@@ -824,14 +882,14 @@ void setup()
 void update_timeleds(void)
 {
 	static int lsec = 61, min;
-	int sec, sec1, sec10, min1, min10, hr1, hr10, hr24, ledpos;
+	int sec, sec1, sec10, min1, min10, hr, hr1, hr10, hr24, ledpos;
 	time_t rawtime, loctime;
 
 	rawtime = timeClient.getEpochTime() + 1;	// get NTP-time
 	loctime = myTZ.toLocal(rawtime);			// calc local time
 	sec = second(loctime);						// get second
 	min = minute(loctime);
-	hr24 = hour(loctime);
+	hr = hr24 = hour(loctime);
 
 	if (!synced || (!hr24 && !min && !sec))		// sync if midnight or not synced
 		synced = timeClient.update();			// NTP-update
@@ -839,9 +897,20 @@ void update_timeleds(void)
 		hr24 -= 12;
 	if (sec != lsec)
 	{
-		if (lixiep->dmode)
+		if(lixiep->nm_start || lixiep->nm_end)
 		{
-			if (!sec)
+			if(lixiep->nm_start > lixiep->nm_end)
+			{
+				brightness = ((hr >= lixiep->nm_start) || (hr < lixiep->nm_end))?lixiep->nm_brightness : lixiep->brightness;
+			}
+			else
+			{
+				brightness = ((hr >= lixiep->nm_start) && (hr < lixiep->nm_end))?lixiep->nm_brightness : lixiep->brightness;
+			}
+		}
+		if (!sec)
+		{
+			if (lixiep->dmode)
 			{
 				if ((lixiep->dmode == DMOD_MINUTE) || !min)
 				{

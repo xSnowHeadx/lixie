@@ -99,10 +99,21 @@ Mit "n" wird das Verhalten der Datumsanzeige eingestellt. "n" kann dabei Werte v
 *Gesamthelligkeit setzen (0...100%):*  
 `http://clockip?BRIGHT=nnn`
 
+*Helligkeit im Nachtmodus setzen (0...100%):*  
+`http://clockip?NMBRIGHT=nnn`
+
+*Beginn Nachtmodus setzen (Stunde, 0..23):*  
+`http://clockip?NMSTART=nn`
+
+*Ende Nachtmodus setzen (Stunde, 0..23):*  
+`http://clockip?NMEND=nn`
+
+Zwischen der Startzeit und der Endzeit des Nachtmodus wird die Anzeigehelligkeit auf den für den Nachtmodus eingestellten Wert gesetzt. Sind Start- und Endzeit 0, ist der Nachtmodus deaktiviert.
+
 *Überblendzeit der Ziffern steuern:*  
 `http://clockip?FADE=nn`
 
-Mit "nn" wird die Überblendzeit beim Ziffernwechsel in 10-Millisekunden-Schritte  eingestellt. "nn" kann Werte von 1 bis 80 annehmen. Mit 1 springt die Anzeige von einer Ziffer zur nächsten, mit 80 benötigt sie 800 ms, also fast eine ganze Anzeigeperiode. Empfohlen wird ein Wert von maximal 30.
+Mit "nn" wird die Überblendzeit beim Ziffernwechsel in 10-Millisekunden-Schritten  eingestellt. "nn" kann Werte von 1 bis 80 annehmen. Mit 1 springt die Anzeige von einer Ziffer zur nächsten, mit 80 benötigt sie 800 ms, also fast eine ganze Anzeigeperiode. Empfohlen wird ein Wert von maximal 50.
 
 *Intensität einer Farbe setzen (0...100%):*  
 `http://clockip?color=nnn`
