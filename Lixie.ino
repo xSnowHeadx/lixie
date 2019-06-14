@@ -272,7 +272,7 @@ int get_digit_pos(int dledpos)
 	int rval = 0;
 
 #if ! HAS_COLONS
-	digitpos = i / NUM_DIGIT_LEDS;
+	rval = dledpos / NUM_DIGIT_LEDS;
 #else
 	if (dledpos >= NUM_DIGIT_LEDS)
 	{
