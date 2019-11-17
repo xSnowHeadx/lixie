@@ -487,6 +487,9 @@ void sweep(void)
 		{
 			leds_last[i] -= leds_step;
 		}
+    if(leds_last[i] > 1.0)
+      leds_last[i] =1.0;
+   
 		if ((leds_last[i] < 0.0) || (leds_last[i] < leds_step))
 			leds_last[i] = 0.0;
 		digitpos = get_digit_pos(i);
@@ -975,4 +978,3 @@ void loop()
 	update_timeleds();
 	server.handleClient();						// handle HTTP-requests
 }
-
