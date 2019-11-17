@@ -487,6 +487,9 @@ void sweep(void)
 		{
 			leds_last[i] -= leds_step;
 		}
+    if(leds_last[i] > 1.0)
+      leds_last[i] =1.0;
+   
 		if ((leds_last[i] < 0.0) || (leds_last[i] < leds_step))
 			leds_last[i] = 0.0;
 		digitpos = get_digit_pos(i);
@@ -595,10 +598,10 @@ void page_out(void)
 		server.sendContent(String(lixiep->nm_brightness));
 		server.sendContent(
 				"\"> %</td><td>Start<br><input maxlength=\"3\" size=\"3\" name=\"NMSTART\" value=\"");
-		server.sendContent((lixiep->nm_start > 9)?"":"0" + String(lixiep->nm_start));
-		server.sendContent(
-				"\"> h</td><td>End<br><input maxlength=\"3\" size=\"3\" name=\"NMEND\" value=\"");
-		server.sendContent((lixiep->nm_end > 9)?"":"0" + String(lixiep->nm_end));
+    server.sendContent((lixiep->nm_start > 9)? String(lixiep->nm_start) :"0" + String(lixiep->nm_start));
+    server.sendContent(
+        "\"> h</td><td>End<br><input maxlength=\"3\" size=\"3\" name=\"NMEND\" value=\"");
+    server.sendContent((lixiep->nm_end > 9)? String(lixiep->nm_end) :"0" + String(lixiep->nm_end));
 		server.sendContent(
 				"\"> h</td></tr><tr><td> <br></td></tr><tr><td><b><big>Fading</font></big></b></td><td></td><td><input maxlength=\"3\" size=\"3\" name=\"FADE\" value=\"");
 		server.sendContent(String(lixiep->fade));
@@ -975,4 +978,3 @@ void loop()
 	update_timeleds();
 	server.handleClient();						// handle HTTP-requests
 }
-
