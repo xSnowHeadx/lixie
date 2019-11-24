@@ -439,6 +439,7 @@ void num2led(int *ledpos, int number)
 	*ledpos += NUM_DIGIT_LEDS;
 }
 
+#if HAS_COLONS
 void colon2led(int *ledpos, unsigned char even, unsigned char ampm)
 {
 	int i, cmode = lixiep->cmode;
@@ -469,6 +470,7 @@ void colon2led(int *ledpos, unsigned char even, unsigned char ampm)
 	}
 	*ledpos += NUM_COLON_LEDS;
 }
+#endif
 
 void sweep(void)
 {
