@@ -43,7 +43,7 @@ extern "C"
 
 // begin of individual settings
 
-#define HAS_COLONS		   0 	// set to 0 if no colon digits used
+#define HAS_COLONS		   1 	// set to 0 if no colon digits used
 
 #define DATE_TIME		   4    // show date for 4 seconds
 
