@@ -33,7 +33,7 @@ extern "C"
 #include <power_mgt.h>
 #include <Adafruit_NeoPixel.h>
 #include <DNSServer.h>
-#include <ESP8266WebServer.h>
+//#include <ESP8266WebServer.h>
 #include <WiFiManager.h>          // https://github.com/tzapu/WiFiManager
 #include <NTPClient.h>			  // https://github.com/arduino-libraries/NTPClient
 #include <Timezone.h>    		  // https://github.com/JChristensen/Timezone
@@ -49,17 +49,13 @@ extern "C"
 
 #define DATE_BUTTON		   0	// button on GPIO0 to show date
 
+#define NUM_DIGIT_LEDS	  20
 #if HAS_COLONS
 #define NUM_LEDS 		 124
-#define NUM_USED_LEDS	  16
-#define NUM_DIGIT_LEDS	  20
 #define NUM_COLON_LEDS	   2
 #define NUM_DIGITS		   8
 #else
 #define NUM_LEDS 		 120
-#define NUM_USED_LEDS	  12
-#define NUM_DIGIT_LEDS	  20
-#define NUM_COLON_LEDS	   0
 #define NUM_DIGITS		   6
 #endif
 
@@ -496,7 +492,7 @@ void sweep(void)
 			leds_last[i] = 0.0;
 		digitpos = get_digit_pos(i);
 #if ! HAS_COLONS
-		corrpos = i % NUM_DIGIT_LEDS;
+		corrpos = i % (NUM_DIGIT_LEDS / 2);
 		corrfact = corr_digit[corrpos];
 #else
 		if ((digitpos == 2) || (digitpos == 5)) // colons
@@ -691,6 +687,8 @@ void setup()
 
 	// if you get here you have connected to the WiFi
 	Serial.println("connected...yeey :)");
+	Serial.print("IP: ");
+    Serial.println(WiFi.localIP());
 
 	// get time from internet
 	timeClient.update();
@@ -967,7 +965,6 @@ void update_timeleds(void)
 #endif
 		num2led(&ledpos, sec10);
 		num2led(&ledpos, sec1);
-
 	}
 	delay(10);
 	digitalWrite(BUILTIN_LED, LOW);
