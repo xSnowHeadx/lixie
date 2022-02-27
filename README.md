@@ -3,7 +3,6 @@
 ![Lixie](pictures/lixie.jpg)
 
 Eine Uhr mit lasergeschnittenen Komponenten (außer LED, Kabel, Schrauben und Controller) basierend auf einem [ESP8266 NodeMCU](https://www.aliexpress.com/item/1PCS-ESP8266-NodeMCU-V3-Lua-WIFI-module-memory-32M-Flash-USB-serial-CH340G/32820380705.html) mit adressierbaren RGB-LED-Stripes
-Die 3D-Modelle für das Gehäuse sind auf thingiverse.com [Uhren-Teile](http://www.thingiverse.com/thing:3392585) und [ESP8266-Gehäuse](https://www.thingiverse.com/thing:3392585) verfügbar.
 
 Die Software ist noch in Entwicklung und soll z.B. noch um die Zeitzoneneingabe erweitert werden.
 
@@ -13,10 +12,10 @@ Für den Aufbau der Word-Clock werden folgende Komponenten benötigt:
 
 - [ESP8266 NodeMCU](https://www.aliexpress.com/item/1PCS-ESP8266-NodeMCU-V3-Lua-WIFI-module-memory-32M-Flash-USB-serial-CH340G/32820380705.html)
 - [WS2812B RGB LED Strip 144/m IP30 black](https://www.aliexpress.com/item/DC5V-WS2812B-30-60-144-leds-m-Smartled-pixel-RGB-individually-addressable-led-strip-light-Black/32849686500.html): Die Gehäuseteile sind für die Verwendung dieser LED ausgelegt. Bei bestimmten LED-Typen benötigt man einen Pegelwandler von den 3,3V des ESP8266 auf die 5V der LED. 
-- optional [ESP8266-Gehäuse](https://www.thingiverse.com/thing:2842012)
+- optional [ESP8266-Gehäuse](https://www.prusaprinters.org/prints/140135-esp8266-esp-12e-case)
 - 1 USB-Netzteil
 - diverse Kabel, Lötwerkzeug
-- die [lasergeschnittenen Teile](http://www.thingiverse.com/thing:3392585)
+- die [lasergeschnittenen Teile](https://www.prusaprinters.org/prints/140129-lixie-clock-with-colons-and-esp8266-esp-12e)
 
 # Hardwareaufbau:
 
